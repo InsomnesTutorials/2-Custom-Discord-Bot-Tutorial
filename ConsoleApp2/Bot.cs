@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
@@ -16,8 +15,16 @@ namespace ConsoleApp2
 
         public async Task RunBot()
         {
-            //Bot token, you can access from https://discord.com/developers/applications
-            const string Token = "Insert Your Own Token Here";
+            //Load Custom Config Code
+            ConfigLoader.Load();
+
+            //Check if there is a prefix actually set
+            if (ConfigLoader.Prefix.Equals("") || ConfigLoader.Token.Equals(""))
+            {
+                Console.WriteLine($"Token and/or Prefix not set in config.json. " +
+                    $"Please add them at {Directory.GetCurrentDirectory()}/configs.json");
+                return;
+            }
 
             //The config of your client
             var config = new DiscordSocketConfig()
@@ -37,7 +44,7 @@ namespace ConsoleApp2
             await client.SetGameAsync("My custom bot!");
 
             //Takes in the token type and the token
-            await client.LoginAsync(TokenType.Bot, Token);
+            await client.LoginAsync(TokenType.Bot, ConfigLoader.Token );
             //Starts and connects to the bot
             await client.StartAsync();
 
